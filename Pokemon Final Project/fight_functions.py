@@ -121,21 +121,14 @@ def player_action (player_profile, target_pokemon):
     return
 
 def pokemon_catch(player_profile, target_pokemon):
-    catch = False
-    chance = random.randint(1,4)
     life_percentage = int(target_pokemon['current_health'] * 100 / target_pokemon['base_health'])
-    if life_percentage >= 75:
-        if chance == 1:
-            catch = True
-    elif 50 <= life_percentage <= 75:
-        if chance == 1 or 2:
-            catch = True
-    elif 25 <= life_percentage <= 50:
-        if chance == 1 or 2 or 3:
-            catch = True
-    else:
-        if chance in range (1,4):
-            catch = True
+
+    catch_probability = 100 - life_percentage
+
+    chance = random.randint(1,100)
+
+    catch = chance <= catch_probability
+
     if catch:
         print('Atrapaste al pokemon {}!'.format(target_pokemon['name']))
         player_profile['pokemon_inventory'].append(copy.deepcopy(target_pokemon))
