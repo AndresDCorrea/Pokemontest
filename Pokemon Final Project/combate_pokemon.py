@@ -5,10 +5,6 @@ from fight_functions import (effectiveness, machine_pokemon_choose, available_at
                              any_player_pokemon_lives, switch_turns, loot, player_action)
 
 
-#Para hacer:
-# player action hace demasiadas cosas, es necesario simplificar un poco
-# Que no aparezcan en la lista del usuario los pokemones que hayan muerto.
-# QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas.
 
 
 
