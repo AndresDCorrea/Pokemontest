@@ -86,7 +86,7 @@ def effectiveness(attack_type, target_types):
         result *= multiplier
     return result
 
-def player_action (player_profile, target_pokemon):
+def player_action (player_profile, target_pokemon, catch):
     action = None
     while not action:
         print('Que quieres hacer?\n'
@@ -101,21 +101,12 @@ def player_action (player_profile, target_pokemon):
                 return player_pokemon
 
             elif action == 2:
-                print('Tienes {} pociones de curación'.format(player_profile['health_potion']))
-                if player_profile['health_potion'] > 0:
-                    selection = pokemon_inventory(player_profile)
-                    selected_pokemon = player_profile['pokemon_inventory'][selection]
-                    selected_pokemon['current_health'] += selected_pokemon['base_health'] / 2
-                    print('Curaste a tu pokemon!. \n'
-                          'La vida actual de {} es de {}'.format(selected_pokemon['name'],
-                                                                 selected_pokemon['current_health']))
-                    player_profile['health_potion'] -= 1
-
-                else: print('Lo siento, no tienes pociones disponibles')
+                pokemon_heal(player_profile)
                 return
 
             else: pokemon_catch(player_profile, target_pokemon)
-
+            if catch:
+                print('hay catch')
         except ValueError:
             print('Ingrese un numero...')
     return
@@ -136,9 +127,23 @@ def pokemon_catch(player_profile, target_pokemon):
 
     else:
         print('El pokemon se ha escapado!')
-    return catch
+    return False
 
+def pokemon_heal(player_profile):
+    print('Tienes {} pociones de curación'.format(player_profile['health_potion']))
+    if player_profile['health_potion'] > 0:
+        selection = pokemon_inventory(player_profile)
+        selected_pokemon = player_profile['pokemon_inventory'][selection]
+        selected_pokemon['current_health'] += selected_pokemon['base_health'] / 2
+        print('Curaste a tu pokemon!. \n'
+              'La vida actual de {} es de {}'.format(selected_pokemon['name'],
+                                                     selected_pokemon['current_health']))
+        player_profile['health_potion'] -= 1
+        return
 
+    else:
+        print('Lo siento, no tienes pociones disponibles')
+    return
 def pokemon_inventory(player_profile):
     global selection
     print('Lista de pokemones: ')
@@ -253,13 +258,13 @@ def switch_turns(currently_playing, player_pokemon, enemy_pokemon):
 
 def loot(player_profile):
     if player_profile['loot_chance'] == True:
-        loot_chance = random.randint(1, 3)
+        loot_chance = random.randint(1, 4)
         if loot_chance == 1:
             print('Lo siento, no hay recompensas esta vez')
         elif loot_chance == 2:
             player_profile['poke-balls'] += 1
             print('Ganaste una pokebola!')
-        else:
+        elif loot_chance == 3:
             player_profile['health_potion'] += 1
             print('Ganaste una pocion de curacion!')
     player_profile['loot_chance'] = False

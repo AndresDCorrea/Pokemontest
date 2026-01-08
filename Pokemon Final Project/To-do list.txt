@@ -1,4 +1,4 @@
 #Para hacer:
-player action hace demasiadas cosas, es necesario simplificar un poco
 Que no aparezcan en la lista del usuario los pokemones que hayan muerto.
 QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas.
+

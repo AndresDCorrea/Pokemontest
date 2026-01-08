@@ -14,13 +14,14 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 
     #Turno del jugador:
     action = None
+    catch = False
     currently_playing = None
     player_pokemon = None
     if not enemy_pokemon:
         enemy_pokemon = machine_pokemon_choose(pokemon_list)
     target_pokemon = enemy_pokemon
     while not action:
-        action, catch = player_action(player_profile, enemy_pokemon)
+        action = player_action(player_profile, enemy_pokemon,catch)
         if isinstance(action, dict):
             player_pokemon = action
 
