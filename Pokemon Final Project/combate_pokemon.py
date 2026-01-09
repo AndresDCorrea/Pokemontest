@@ -46,7 +46,11 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
                 #check avance de ronda
                 if target_pokemon == enemy_pokemon and enemy_pokemon['current_health'] <= 0 or catch:
                     enemy_pokemon['current_health'] = 0
+
                     player_profile['combats'] += 1
+                    for pokemon in pokemon_list:
+                        pokemon['level'] += 1
+                    print('El nivel actual de los pokemones enemigos es: {}'. format(pokemon_list[0]['level']))
                     player_profile['loot_chance'] = True
 
                     player_pokemon['current_xp'] += player_pokemon['level'] * 50

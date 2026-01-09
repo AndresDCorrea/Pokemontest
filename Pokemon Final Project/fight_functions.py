@@ -112,23 +112,28 @@ def player_action (player_profile, target_pokemon, catch):
     return
 
 def pokemon_catch(player_profile, target_pokemon):
-    life_percentage = int(target_pokemon['current_health'] * 100 / target_pokemon['base_health'])
+    print('Tienes {} pokebolas'.format(player_profile['poke-balls']))
+    if player_profile['poke-balls'] > 0:
+        life_percentage = int(target_pokemon['current_health'] * 100 / target_pokemon['base_health'])
 
-    catch_probability = 100 - life_percentage
+        catch_probability = 100 - life_percentage
 
-    chance = random.randint(1,100)
+        chance = random.randint(1,100)
 
-    catch = chance <= catch_probability
+        catch = chance <= catch_probability
 
-    if catch:
-        print('Atrapaste al pokemon {}!'.format(target_pokemon['name']))
-        player_profile['pokemon_inventory'].append(copy.deepcopy(target_pokemon))
-        return catch
+        if catch:
+            print('Atrapaste al pokemon {}!'.format(target_pokemon['name']))
+            player_profile['pokemon_inventory'].append(copy.deepcopy(target_pokemon))
+            return catch
 
+        else:
+            print('El pokemon se ha escapado!')
+
+        player_profile['poke-balls'] -= 1
+        return False
     else:
-        print('El pokemon se ha escapado!')
-    return False
-
+        print('No tienes pokebolas disponibles')
 def pokemon_heal(player_profile):
     print('Tienes {} pociones de curación'.format(player_profile['health_potion']))
     if player_profile['health_potion'] > 0:
