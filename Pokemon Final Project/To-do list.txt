@@ -1,5 +1,12 @@
 #Para hacer:
-Que no aparezcan en la lista del usuario los pokemones que hayan muerto.
-QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas.
+Hay un error que hace que captures al pokemon aunque la caputra haya fallado
+La vida base de los pokemones deberia aumentar a medida que suben de nivel
+Hay un error que hace que el pokemon no cambie al capturarlo
+POr alguna razon el combate se termino en la ronda 13
+
+
+Hecho:
 Hay que crear un if para que solo se pueda intentar capturar un pokemon si hay pokebolas disponibles,
-                                                                                        (iusar la misma logica que con la funcion de curar)
+                                                                                        (usar la misma logica que con la funcion de curar)
+hay que descontar un pokebola cuando hay un intento
+QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas.
