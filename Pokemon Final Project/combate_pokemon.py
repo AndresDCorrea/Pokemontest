@@ -10,85 +10,116 @@ from fight_functions import (effectiveness, machine_pokemon_choose, available_at
 
 
 def fight(player_profile, enemy_pokemon, pokemon_list):
-    global target_pokemon
 
-    #Turno del jugador:
-    action = None
-    catch = False
-    currently_playing = None
-    player_pokemon = None
     if not enemy_pokemon:
         enemy_pokemon = machine_pokemon_choose(pokemon_list)
-    target_pokemon = enemy_pokemon
-    while not action:
-        action = player_action(player_profile, enemy_pokemon,catch)
+
+    player_pokemon = None
+    currently_playing = None
+
+    while True:
+
+        # ───────── TURNO DEL JUGADOR ─────────
+        action = player_action(player_profile, enemy_pokemon)
+
+        # Elegir Pokémon para pelear
         if isinstance(action, dict):
             player_pokemon = action
 
+        # Curar (consume turno)
+        elif action is None:
+            pass
 
+        # Intentar capturar
+        elif isinstance(action, tuple):
+            caught, enemy_pokemon = action
+            if caught:
+                return None   # enemigo capturado → termina combate
+
+        # ───────── ATAQUE DEL JUGADOR ─────────
         if player_pokemon:
-            while player_pokemon['current_health'] > 0:
 
-                if enemy_pokemon['current_health'] != enemy_pokemon['base_health']:
-                    choice = input('Quieres intentar capturar este pokemon? Y/N: ').lower()
-                    if choice == 'y':
-                        break
+            currently_playing, target_pokemon = switch_turns(
+                currently_playing,
+                player_pokemon,
+                enemy_pokemon
+            )
 
-                currently_playing, target_pokemon = switch_turns(currently_playing, player_pokemon, enemy_pokemon)
-                print('Es el turno de {}'.format(currently_playing['name']))
-                attacks = available_attacks(currently_playing)
-                chosen_attack = player_attack(attacks)
+            print(f"Es el turno de {currently_playing['name']}")
+            attacks = available_attacks(currently_playing)
+            chosen_attack = player_attack(attacks)
 
-                #resultado ataque:
-                attack_result(chosen_attack, target_pokemon)
-                input()
+            attack_result(chosen_attack, target_pokemon)
+            input()
 
-                #check avance de ronda
-                if target_pokemon == enemy_pokemon and enemy_pokemon['current_health'] <= 0 or catch:
-                    enemy_pokemon['current_health'] = 0
+            # Enemigo derrotado
+            if enemy_pokemon['current_health'] <= 0:
+                enemy_pokemon['current_health'] = 0
 
-                    player_profile['combats'] += 1
-                    for pokemon in pokemon_list:
-                        pokemon['level'] += 1
-                    print('El nivel actual de los pokemones enemigos es: {}'. format(pokemon_list[0]['level']))
-                    player_profile['loot_chance'] = True
+                player_profile['combats'] += 1
+                player_profile['loot_chance'] = True
 
-                    player_pokemon['current_xp'] += player_pokemon['level'] * 50
-                    print('Derrotaste a {}. Avanzaste una ronda!\n'
-                          'Ganaste {} XP'.format(enemy_pokemon['name'], player_pokemon['current_xp']))
+                # Subida de nivel enemigos futuros
+                for pokemon in pokemon_list:
+                    pokemon['level'] += 1
+                    pokemon['base_health'] += pokemon['base_health'] / 4
+                    pokemon['current_health'] = pokemon['base_health']
 
-                    if player_pokemon['current_xp'] == player_pokemon['level'] * 100:
-                        player_pokemon['level'] += 1
-                        print('Subiste de nivel. Tu nivel actual es: {}'. format(player_pokemon['level']))
-                        player_pokemon['current_xp'] = 0
-                        player_pokemon['current_health'] = 100
-                        print('Al subir de nivel, recuperaste toda tu vida')
+                print(f"El nivel actual de los pokemones enemigos es: {pokemon_list[0]['level']}")
 
-                    loot(player_profile)
-                    return None
+                # XP del jugador
+                player_pokemon['current_xp'] += player_pokemon['level'] * 50
+                print(
+                    f"Derrotaste a {enemy_pokemon['name']}.\n"
+                    f"Ganaste {player_pokemon['current_xp']} XP"
+                )
 
-                #Turno de la máquina
-                currently_playing, target_pokemon = switch_turns(currently_playing,player_pokemon, enemy_pokemon)
-                print('Es el turno de {}'.format((currently_playing['name'])))
-                attacks = available_attacks(currently_playing)
+                if player_pokemon['current_xp'] >= player_pokemon['level'] * 100:
+                    player_pokemon['level'] += 1
+                    player_pokemon['base_health'] += player_pokemon['base_health'] / 2
+                    player_pokemon['current_xp'] = 0
+                    player_pokemon['current_health'] = player_pokemon['base_health']
 
-                #Try para que no crashee cuando no hay ataques
-                try:
-                    chosen_attack = random.choice(attacks)
-                    print('{} eligio {}'.format(currently_playing['name'], chosen_attack['att_name']))
+                    print("Subiste de nivel! \n"
+                          f"Nivel actual: {player_pokemon['level']}")
+                    print("Recuperaste toda tu vida")
 
-                    # resultado ataque:
-                    multiplier = effectiveness(chosen_attack['move_type'], player_pokemon['type'])
-                    print(effectiveness_msg(multiplier))
-                    attack_dmg = chosen_attack['power'] * multiplier
-                    target_pokemon['current_health'] -= attack_dmg
-                    print('El ataque hizo {} de daño'.format(attack_dmg))
-                    print('La vida de {} es de: {}'.format(target_pokemon['name'], target_pokemon['current_health']))
-                    input()
+                loot(player_profile)
+                return None   # combate terminado
 
-                except IndexError:
-                    print('No hay ataques disponibles')
-            return enemy_pokemon
+        # ───────── TURNO DE LA MÁQUINA ─────────
+        currently_playing, target_pokemon = switch_turns(
+            currently_playing,
+            player_pokemon,
+            enemy_pokemon
+        )
+
+        print(f"Es el turno de {currently_playing['name']}")
+        attacks = available_attacks(currently_playing)
+
+        try:
+            chosen_attack = random.choice(attacks)
+            print(f"{currently_playing['name']} eligió {chosen_attack['att_name']}")
+
+            multiplier = effectiveness(chosen_attack['move_type'], player_pokemon['type'])
+            print(effectiveness_msg(multiplier))
+
+            attack_dmg = chosen_attack['power'] * multiplier
+            player_pokemon['current_health'] -= attack_dmg
+
+            print(f"El ataque hizo {attack_dmg} de daño")
+            print(f"La vida de {player_pokemon['name']} es {player_pokemon['current_health']}")
+            input()
+
+        except IndexError:
+            print("No hay ataques disponibles")
+
+        # ───────── Pokémon del jugador derrotado ─────────
+        if player_pokemon['current_health'] <= 0:
+            player_pokemon['current_health'] = 0
+            print(f"{player_pokemon['name']} fue derrotado")
+            player_pokemon = None
+
 
 
 
@@ -96,6 +127,7 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 def main():
     pokemon_list = get_all_pokemons()
     player_profile = get_player_profile(pokemon_list)
+    player_profile['poke-balls'] = 10
     enemy_pokemon = None
     while any_player_pokemon_lives(player_profile):
         enemy_pokemon = fight(player_profile, enemy_pokemon, pokemon_list)

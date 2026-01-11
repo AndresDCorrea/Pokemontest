@@ -1,7 +1,6 @@
 #Para hacer:
-Hay un error que hace que captures al pokemon aunque la caputra haya fallado
-La vida base de los pokemones deberia aumentar a medida que suben de nivel
-Hay un error que hace que el pokemon no cambie al capturarlo
+Hay que avanzar de ronda al capturar un pokemon tambien
+
 POr alguna razon el combate se termino en la ronda 13
 
 
@@ -9,4 +8,12 @@ Hecho:
 Hay que crear un if para que solo se pueda intentar capturar un pokemon si hay pokebolas disponibles,
                                                                                         (usar la misma logica que con la funcion de curar)
 hay que descontar un pokebola cuando hay un intento
-QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas.
+QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas
+Hay un error que hace que el pokemon no cambie al capturarlo.
+La vida base de los pokemones deberia aumentar a medida que suben de nivel
+Hay un error que hace que captures al pokemon aunque la caputra haya fallado
+
+COmmit:
+"Reestructura las funciones player action, fiht y pokemon catch para una ejecucion mas clara y ordenada\n Aumenta la vida de los pokemones tanto enemigos como los propios al subir de nivel.\n Ahora el pokemon cambia al capturarlo\n"
+
+
