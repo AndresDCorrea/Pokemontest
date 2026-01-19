@@ -111,6 +111,37 @@ def player_action(player_profile, target_pokemon):
         except ValueError:
             print('Ingrese un numero...')
 
+def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
+    player_profile['combats'] += 1
+    player_profile['loot_chance'] = True
+
+    # Subida de nivel enemigos futuros
+    for pokemon in pokemon_list:
+        pokemon['level'] += 1
+        pokemon['base_health'] += pokemon['base_health'] / 4
+        pokemon['current_health'] = pokemon['base_health']
+
+    print(f"El nivel actual de los pokemones enemigos es: {pokemon_list[0]['level']}")
+
+    # XP del jugador
+    player_pokemon['current_xp'] += player_pokemon['level'] * 50
+    print(
+        f"Derrotaste a {enemy_pokemon['name']}.\n"
+        f"Ganaste {player_pokemon['current_xp']} XP"
+    )
+
+    if player_pokemon['current_xp'] >= player_pokemon['level'] * 100:
+        player_pokemon['level'] += 1
+        player_pokemon['base_health'] += player_pokemon['base_health'] / 2
+        player_pokemon['current_xp'] = 0
+        player_pokemon['current_health'] = player_pokemon['base_health']
+
+        print("Subiste de nivel! \n"
+              f"Nivel actual: {player_pokemon['level']}")
+        print("Recuperaste toda tu vida")
+
+    return player_pokemon
+
 
 def pokemon_catch(player_profile, target_pokemon):
     print('Tienes {} pokebolas'.format(player_profile['poke-balls']))

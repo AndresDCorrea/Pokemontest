@@ -2,7 +2,7 @@ import random
 from pokeload import get_all_pokemons
 from fight_functions import (effectiveness, machine_pokemon_choose, available_attacks, player_attack,
                              effectiveness_msg, attack_result, get_player_profile,
-                             any_player_pokemon_lives, switch_turns, loot, player_action)
+                             any_player_pokemon_lives, switch_turns, loot, player_action, end_round)
 
 
 
@@ -55,35 +55,7 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
             # Enemigo derrotado
             if enemy_pokemon['current_health'] <= 0:
                 enemy_pokemon['current_health'] = 0
-
-                player_profile['combats'] += 1
-                player_profile['loot_chance'] = True
-
-                # Subida de nivel enemigos futuros
-                for pokemon in pokemon_list:
-                    pokemon['level'] += 1
-                    pokemon['base_health'] += pokemon['base_health'] / 4
-                    pokemon['current_health'] = pokemon['base_health']
-
-                print(f"El nivel actual de los pokemones enemigos es: {pokemon_list[0]['level']}")
-
-                # XP del jugador
-                player_pokemon['current_xp'] += player_pokemon['level'] * 50
-                print(
-                    f"Derrotaste a {enemy_pokemon['name']}.\n"
-                    f"Ganaste {player_pokemon['current_xp']} XP"
-                )
-
-                if player_pokemon['current_xp'] >= player_pokemon['level'] * 100:
-                    player_pokemon['level'] += 1
-                    player_pokemon['base_health'] += player_pokemon['base_health'] / 2
-                    player_pokemon['current_xp'] = 0
-                    player_pokemon['current_health'] = player_pokemon['base_health']
-
-                    print("Subiste de nivel! \n"
-                          f"Nivel actual: {player_pokemon['level']}")
-                    print("Recuperaste toda tu vida")
-
+                end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon)
                 loot(player_profile)
                 return None   # combate terminado
 
