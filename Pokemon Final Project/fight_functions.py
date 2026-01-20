@@ -160,7 +160,7 @@ def pokemon_catch(player_profile, target_pokemon):
     if catch:
         print('Atrapaste al pokemon {}!'.format(target_pokemon['name']))
         player_profile['pokemon_inventory'].append(copy.deepcopy(target_pokemon))
-        return True, None   # enemigo desaparece
+        return True, target_pokemon   # enemigo desaparece
 
     else:
         print('El pokemon se ha escapado!')

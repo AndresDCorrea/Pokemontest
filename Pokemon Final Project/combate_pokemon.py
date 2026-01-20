@@ -32,8 +32,11 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 
         # Intentar capturar
         elif isinstance(action, tuple):
+
             caught, enemy_pokemon = action
             if caught:
+                end_round(player_profile,pokemon_list,player_pokemon,enemy_pokemon)
+                loot(player_profile)
                 return None   # enemigo capturado → termina combate
 
         # ───────── ATAQUE DEL JUGADOR ─────────
