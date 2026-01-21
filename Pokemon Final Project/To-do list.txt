@@ -1,7 +1,5 @@
 #Para hacer:
-Hay un error al elegir curacion cuando la mauqina te devuelve el ataque, ya que no elegiste ningun pokemon pero la maquina te ataca igual.
-Hay que crear una excepcion para que si el jugador no tiene ningun pokemon jugando, la maquina ataque un pokemon aleatorio
-
+Hay que avanzar de ronda al capturar un pokemon tambien
 
 POr alguna razon el combate se termino en la ronda 13
 
@@ -14,6 +12,8 @@ QUe los pokemones enemigos vayan subiendo de nivel a medida que pasen las rondas
 Hay un error que hace que el pokemon no cambie al capturarlo.
 La vida base de los pokemones deberia aumentar a medida que suben de nivel
 Hay un error que hace que captures al pokemon aunque la caputra haya fallado
-Hay que avanzar de ronda al capturar un pokemon tambien
+
+COmmit:
+"Reestructura las funciones player action, fiht y pokemon catch para una ejecucion mas clara y ordenada\n Aumenta la vida de los pokemones tanto enemigos como los propios al subir de nivel.\n Ahora el pokemon cambia al capturarlo\n"
 
 
