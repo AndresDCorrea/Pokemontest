@@ -102,7 +102,6 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 def main():
     pokemon_list = get_all_pokemons()
     player_profile = get_player_profile(pokemon_list)
-    player_profile['poke-balls'] = 10
     enemy_pokemon = None
     while any_player_pokemon_lives(player_profile):
         enemy_pokemon = fight(player_profile, enemy_pokemon, pokemon_list)

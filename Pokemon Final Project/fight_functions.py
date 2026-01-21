@@ -131,8 +131,8 @@ def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
     )
 
     if player_pokemon['current_xp'] >= player_pokemon['level'] * 100:
-        player_pokemon['level'] += 1
-        player_pokemon['base_health'] += player_pokemon['base_health'] / 2
+        player_pokemon['level'] += 2
+        player_pokemon['base_health'] += player_pokemon['base_health'] / 1.5
         player_pokemon['current_xp'] = 0
         player_pokemon['current_health'] = player_pokemon['base_health']
 
