@@ -1,4 +1,5 @@
 import copy
+import os
 import random
 
 
@@ -93,10 +94,13 @@ def player_action(player_profile, target_pokemon):
             '1 - Pelear\n'
             '2 - Curar un pokemon\n'
             '3 - Capturar un pokemon\n'
+            '4 - Ver inventario\n'
+            '5 - Ver historial\n'
         )
 
         try:
             action = int(input())
+
 
             if action == 1:
                 return pokemon_choose(player_profile)
@@ -108,8 +112,47 @@ def player_action(player_profile, target_pokemon):
             elif action == 3:
                 return pokemon_catch(player_profile, target_pokemon)
 
+            elif action == 4:
+                show_inventory(player_profile)
+                return None
+
+            elif action == 5:
+                show_combat_history(player_profile)
+                return None
+
         except ValueError:
             print('Ingrese un numero...')
+
+def show_inventory(player_profile):
+    print("\n" + "="*40)
+    print("INVENTARIO")
+    print("="*40)
+
+    print("\nPokémon:")
+    for pokemon in player_profile['pokemon_inventory']:
+        print(f"{pokemon['name']} | Nivel {pokemon['level']} | "
+              f"HP {pokemon['current_health']}/{pokemon['base_health']}")
+
+    print(f"\nPokebolas: {player_profile['poke-balls']}")
+    print(f"Pociones: {player_profile['health_potion']}")
+    print("="*40 + "\n")
+
+def show_combat_history(player_profile):
+    print("\n" + "="*40)
+    print("HISTORIAL DE COMBATES")
+    print("="*40)
+
+    if not player_profile['combat_history']:
+        print("Aún no has realizado combates.")
+        return
+
+    for combat in player_profile['combat_history']:
+        print(f"Combate #{combat['combat_number']} | "
+              f"Enemigo: {combat['enemy_name']} (Lvl {combat['enemy_level']}) | "
+              f"Resultado: {combat['result']}")
+
+    print("="*40 + "\n")
+
 
 def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
     player_profile['combats'] += 1
@@ -118,7 +161,7 @@ def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
     # Subida de nivel enemigos futuros
     for pokemon in pokemon_list:
         pokemon['level'] += 1
-        pokemon['base_health'] += pokemon['base_health'] / 4
+        pokemon['base_health'] += int(pokemon['base_health'] / 4)
         pokemon['current_health'] = pokemon['base_health']
 
     print(f"El nivel actual de los pokemones enemigos es: {pokemon_list[0]['level']}")
@@ -132,7 +175,7 @@ def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
 
     if player_pokemon['current_xp'] >= player_pokemon['level'] * 100:
         player_pokemon['level'] += 1
-        player_pokemon['base_health'] += player_pokemon['base_health'] / 2
+        player_pokemon['base_health'] += int(player_pokemon['base_health'] / 2)
         player_pokemon['current_xp'] = 0
         player_pokemon['current_health'] = player_pokemon['base_health']
 
@@ -140,8 +183,36 @@ def end_round(player_profile, pokemon_list, player_pokemon, enemy_pokemon):
               f"Nivel actual: {player_pokemon['level']}")
         print("Recuperaste toda tu vida")
 
+    player_profile['combat_history'].append({
+        "combat_number": player_profile['combats'],
+        "enemy_name": enemy_pokemon['name'],
+        "enemy_level": enemy_pokemon['level'],
+        "result": "win"
+    })
+
     return player_pokemon
 
+def show_combat_status(player_pokemon, enemy_pokemon, player_profile):
+    print("\n" + "="*40)
+    print("ESTADO DEL COMBATE")
+    print("="*40)
+
+    if player_pokemon:
+        print(f"Tu Pokémon: {player_pokemon['name']}")
+        print(f"Nivel: {player_pokemon['level']}")
+        print(f"Vida: {player_pokemon['current_health']} / {player_pokemon['base_health']}")
+    else:
+        print("No tienes Pokémon activo.")
+
+    if enemy_pokemon:
+        print(f"\nEnemigo: {enemy_pokemon['name']} {enemy_pokemon['type']}")
+        print(f"Nivel: {enemy_pokemon['level']}")
+        print(f"Vida: {enemy_pokemon['current_health']} / {enemy_pokemon['base_health']}")
+
+    print("\nInventario rápido:")
+    print(f"Pokebolas: {player_profile['poke-balls']}")
+    print(f"Pociones: {player_profile['health_potion']}")
+    print("="*40 + "\n")
 
 def pokemon_catch(player_profile, target_pokemon):
     print('Tienes {} pokebolas'.format(player_profile['poke-balls']))
@@ -160,11 +231,14 @@ def pokemon_catch(player_profile, target_pokemon):
     if catch:
         print('Atrapaste al pokemon {}!'.format(target_pokemon['name']))
         player_profile['pokemon_inventory'].append(copy.deepcopy(target_pokemon))
+        input('Presione cualquier tecla para continuar...')
         return True, target_pokemon   # enemigo desaparece
 
     else:
         print('El pokemon se ha escapado!')
+        input('Presione cualquier tecla para continuar...')
         return False, target_pokemon
+
 
 def pokemon_heal(player_profile):
     print('Tienes {} pociones de curación'.format(player_profile['health_potion']))
@@ -180,7 +254,9 @@ def pokemon_heal(player_profile):
 
     else:
         print('Lo siento, no tienes pociones disponibles')
+    input('Presione cualquier tecla para continuar...')
     return
+
 def pokemon_inventory(player_profile):
     global selection
     print('Lista de pokemones: ')
@@ -214,7 +290,7 @@ def pokemon_choose(player_profile):
 
 def machine_pokemon_choose(pokemon_list):
     enemy_pokemon = copy.deepcopy(random.choice(pokemon_list))
-    print('El enemigo ha elegido ha: {} {}'.format(enemy_pokemon['name'], enemy_pokemon['type']))
+    print('El enemigo ha elegido ha: {}'.format(enemy_pokemon['name']))
     return enemy_pokemon
 
 def available_attacks(pokemon_playing):
@@ -276,7 +352,8 @@ def get_player_profile(pokemon_list):
         'combats': 0,
         'poke-balls': 0,
         'health_potion':0,
-        'loot_chance' : False
+        'loot_chance' : False,
+        'combat_history': []
 
     }
 

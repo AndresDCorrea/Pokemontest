@@ -1,8 +1,10 @@
+import os
 import random
 from pokeload import get_all_pokemons
 from fight_functions import (effectiveness, machine_pokemon_choose, available_attacks, player_attack,
                              effectiveness_msg, attack_result, get_player_profile,
-                             any_player_pokemon_lives, switch_turns, loot, player_action, end_round)
+                             any_player_pokemon_lives, switch_turns, loot, player_action, end_round,
+                             show_combat_status)
 
 
 
@@ -10,6 +12,7 @@ from fight_functions import (effectiveness, machine_pokemon_choose, available_at
 
 
 def fight(player_profile, enemy_pokemon, pokemon_list):
+    os.system('cls')
 
     if not enemy_pokemon:
         enemy_pokemon = machine_pokemon_choose(pokemon_list)
@@ -18,6 +21,8 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
     currently_playing = None
 
     while True:
+
+        show_combat_status(player_pokemon, enemy_pokemon, player_profile)
 
         # ───────── TURNO DEL JUGADOR ─────────
         action = player_action(player_profile, enemy_pokemon)
@@ -37,10 +42,11 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
             if caught:
                 end_round(player_profile,pokemon_list,player_pokemon,enemy_pokemon)
                 loot(player_profile)
-                return None   # enemigo capturado → termina combate
+                return None
 
         # ───────── ATAQUE DEL JUGADOR ─────────
         if player_pokemon:
+
 
             currently_playing, target_pokemon = switch_turns(
                 currently_playing,
@@ -63,6 +69,8 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
                 return None   # combate terminado
 
         # ───────── TURNO DE LA MÁQUINA ─────────
+        if player_pokemon is None:
+            continue
         currently_playing, target_pokemon = switch_turns(
             currently_playing,
             player_pokemon,
@@ -84,7 +92,7 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 
             print(f"El ataque hizo {attack_dmg} de daño")
             print(f"La vida de {player_pokemon['name']} es {player_pokemon['current_health']}")
-            input()
+
 
         except IndexError:
             print("No hay ataques disponibles")
@@ -95,6 +103,8 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
             print(f"{player_pokemon['name']} fue derrotado")
             player_pokemon = None
 
+        input('Presione cualquier tecla para continuar...')
+
 
 
 
@@ -102,7 +112,6 @@ def fight(player_profile, enemy_pokemon, pokemon_list):
 def main():
     pokemon_list = get_all_pokemons()
     player_profile = get_player_profile(pokemon_list)
-    player_profile['poke-balls'] = 10
     enemy_pokemon = None
     while any_player_pokemon_lives(player_profile):
         enemy_pokemon = fight(player_profile, enemy_pokemon, pokemon_list)
